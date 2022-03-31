@@ -11,5 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "three": "^0.139.1"
+  },
+  "devDependencies": {
+    "@parcel/transformer-glsl": "2.4.0"
   }
 }
