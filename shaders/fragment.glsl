@@ -13,6 +13,6 @@ void main(){
     //  gl_FragColor = vec4(vCoordinates.x/512., 1., 0., 1.);  //Gradient
     //  gl_FragColor = vec4(vCoordinates.x/512., vCoordinates.y/512., 0., 1.);  //More Gradient
      gl_FragColor = image;
-     gl_FragColor = maskTexture;
+     gl_FragColor.a *= maskTexture.r;
 
 }
