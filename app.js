@@ -2,6 +2,7 @@ import * as THREE from "three";
 import fragment from "./shaders/fragment.glsl";
 import vertex from "./shaders/vertex.glsl";
 
+let orbitControls = require("three-orbit-controls")(THREE);
 export default class Sketch {
     constructor() {
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -12,9 +13,10 @@ export default class Sketch {
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 3000);
         this.camera.position.z = 1000;
         this.scene = new THREE.Scene();
-
-        this.addMesh();
         this.time = 0;
+
+        this.controls = new orbitControls(this.camera, this.renderer.domElement);
+        this.addMesh();
         this.render();
     }
 
@@ -56,8 +58,8 @@ export default class Sketch {
 
     render() {
         this.time++;
-        this.mesh.rotation.x += 0.01;
-        this.mesh.rotation.y += 0.02;
+        // this.mesh.rotation.x += 0.01;
+        // this.mesh.rotation.y += 0.02;
         // console.log(this.time);
         this.renderer.render(this.scene, this.camera);
 
