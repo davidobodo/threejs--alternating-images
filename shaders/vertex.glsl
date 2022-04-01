@@ -12,6 +12,7 @@ uniform float move;
 uniform float time;
 uniform vec2 mouse;
 uniform float mousePressed;
+uniform float transition;
 
 
 void main(){
@@ -34,6 +35,7 @@ void main(){
     stable.y += 50.*sin(0.1*time*aPress)*aDirection*area*mousePressed;
     stable.z += 200.*cos(0.1*time*aPress)*aDirection*area*mousePressed;
 
+    pos = mix(pos, stable, transition);
 
     vec4 mvPosition = modelViewMatrix * vec4( pos, 1.);
     gl_PointSize = 4000. * (1. / - mvPosition.z ); // For particles we need to set point size

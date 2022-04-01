@@ -5,6 +5,7 @@ import imgCans from "./img/t.png";
 import imgImposter from "./img/t1.webp";
 import imgMask from "./img/mask.jpeg";
 import gsap from "gsap";
+import * as dat from "dat.gui";
 
 let orbitControls = require("three-orbit-controls")(THREE);
 export default class Sketch {
@@ -27,9 +28,19 @@ export default class Sketch {
         this.textures = [new THREE.TextureLoader().load(imgCans), new THREE.TextureLoader().load(imgImposter)];
         this.mask = new THREE.TextureLoader().load(imgMask);
         // this.controls = new orbitControls(this.camera, this.renderer.domElement);
+        this.settings();
         this.addMesh();
         this.render();
         this.mouseEffects();
+    }
+
+    settings() {
+        let that = this;
+        this.settings = {
+            progress: 0
+        };
+        this.gui = new dat.GUI();
+        this.gui.add(this.settings, "progress", 0, 1, 0.01);
     }
 
     mouseEffects() {
@@ -142,6 +153,10 @@ export default class Sketch {
                     type: "f",
                     value: 0
                 },
+                transition: {
+                    type: "f",
+                    value: null
+                },
                 move: {
                     type: "f",
                     value: 0
@@ -171,6 +186,8 @@ export default class Sketch {
 
         this.material.uniforms.imgImposter.value = this.textures[prev];
         this.material.uniforms.imgCans.value = this.textures[next];
+
+        this.material.uniforms.transition.value = this.settings.progress;
         this.material.uniforms.time.value = this.time;
         this.material.uniforms.move.value = this.move;
         this.material.uniforms.mouse.value = this.point;
