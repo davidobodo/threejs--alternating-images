@@ -13,7 +13,7 @@ void main(){
     vUv = uv;
 
     vec3 pos = position;
-    pos.z = position.z + move*aSpeed + aOffset;
+    pos.z = position.z + move*20.*aSpeed + aOffset;
 
     // gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);
     vec4 mvPosition = modelViewMatrix * vec4( pos, 1.);
