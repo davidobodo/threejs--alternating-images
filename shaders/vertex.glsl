@@ -14,7 +14,7 @@ void main(){
     vUv = uv;
 
     vec3 pos = position;
-    pos.z = mod(position.z + move*20.*aSpeed + aOffset, 2000.);
+    pos.z = mod(position.z + move*20.*aSpeed + aOffset, 2000.) - 1000.;
 
     // gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);
     vec4 mvPosition = modelViewMatrix * vec4( pos, 1.);
