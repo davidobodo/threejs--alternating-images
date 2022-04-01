@@ -539,12 +539,20 @@ class Sketch {
     addMesh() {
         // this.geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
         this.geometry = new _three.PlaneBufferGeometry(1000, 1000, 10, 10); //Lets use a plane instead of a box geometry
-        // this.geometry = new THREE.BufferGeometry();
+        this.geometry = new _three.BufferGeometry();
         let number = 262144;
-        // this.positions =
-        this.material = new _three.MeshNormalMaterial({
-            side: _three.DoubleSide
-        });
+        this.positions = new _three.BufferAttribute(new Float32Array(number * 3), 3);
+        let index = 0;
+        for(let i = 0; i < 512; i++){
+            let posX = i - 256; //Used to center the particles
+            for(let j = 0; j < 512; j++){
+                this.positions.setXYZ(index, posX * 2, j - 256, 0); //Number of particles, x position, y position, z position
+                index++;
+            }
+        }
+        //Add the positions to the geometry
+        this.geometry.setAttribute("position", this.positions);
+        // this.material = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide });
         this.material = new _three.ShaderMaterial({
             fragmentShader: _fragmentGlslDefault.default,
             vertexShader: _vertexGlslDefault.default,
@@ -561,9 +569,7 @@ class Sketch {
     }
     render() {
         this.time++;
-        // this.mesh.rotation.x = this.time / 2000;
         this.mesh.rotation.x += 0.01;
-        // this.mesh.rotation.y = this.time / 1000;
         this.mesh.rotation.y += 0.02;
         // console.log(this.time);
         this.renderer.render(this.scene, this.camera);
@@ -573,7 +579,7 @@ class Sketch {
 exports.default = Sketch;
 new Sketch();
 
-},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"ghM2o","./shaders/fragment.glsl":"6yofB","./shaders/vertex.glsl":"fWka7"}],"ktPTu":[function(require,module,exports) {
+},{"three":"ktPTu","./shaders/fragment.glsl":"6yofB","./shaders/vertex.glsl":"fWka7","@parcel/transformer-js/src/esmodule-helpers.js":"ghM2o"}],"ktPTu":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "ACESFilmicToneMapping", ()=>ACESFilmicToneMapping
@@ -30376,7 +30382,7 @@ exports.export = function(dest, destName, get) {
 module.exports = "#define GLSLIFY 1\nvoid main(){\n    gl_FragColor = vec4(1., 0., 0., 1.);\n}";
 
 },{}],"fWka7":[function(require,module,exports) {
-module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\n\nvoid main(){\n\n    vUv = uv;\n\n    // gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);\n    vec4 mvPosition = modelViewMatrix * vec4( position, 1.);\n    gl_PointSize = 5000. * (1. / - mvPosition.z ); // For particles we need to set point size\n    // gl_PointSize = size * 10.;\n    gl_Position = projectionMatrix * mvPosition;\n\n}";
+module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\n\nvoid main(){\n    vUv = uv;\n\n    // gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);\n    vec4 mvPosition = modelViewMatrix * vec4( position, 1.);\n    gl_PointSize = 5000. * (1. / - mvPosition.z ); // For particles we need to set point size\n    // gl_PointSize = size * 10.;\n    gl_Position = projectionMatrix * mvPosition;\n\n}";
 
 },{}]},["g9xlh","igcvL"], "igcvL", "parcelRequire699e")
 
