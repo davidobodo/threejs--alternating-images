@@ -584,7 +584,10 @@ class Sketch {
                     value: this.textures[1]
                 }
             },
-            side: _three.DoubleSide
+            side: _three.DoubleSide,
+            transparent: true,
+            depthTest: false,
+            depthWrite: false
         });
         this.mesh = new _three.Points(this.geometry, this.material);
         this.scene.add(this.mesh);

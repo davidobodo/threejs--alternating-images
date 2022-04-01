@@ -66,10 +66,10 @@ export default class Sketch {
                     value: this.textures[1]
                 }
             },
-            side: THREE.DoubleSide
-            // transparent: true,
-            // depthTest: false,
-            // depthWrite: false
+            side: THREE.DoubleSide,
+            transparent: true,
+            depthTest: false,
+            depthWrite: false
         });
         this.mesh = new THREE.Points(this.geometry, this.material);
         this.scene.add(this.mesh);
