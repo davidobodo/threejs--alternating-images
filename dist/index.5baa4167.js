@@ -541,6 +541,8 @@ class Sketch {
         this.scene = new _three.Scene();
         this.time = 0;
         this.move = 0;
+        this.raycaster = new _three.Raycaster();
+        this.mouse = new _three.Vector2();
         this.textures = [
             new _three.TextureLoader().load(_tPngDefault.default),
             new _three.TextureLoader().load(_t1WebpDefault.default)
@@ -552,10 +554,19 @@ class Sketch {
         this.mouseEffects();
     }
     mouseEffects() {
+        this.test = new _three.Mesh(new _three.PlaneBufferGeometry(2000, 2000), new _three.MeshBasicMaterial());
         window.addEventListener("mousewheel", (e)=>{
-            console.log(e.wheelDeltaY, "THE MOUSE");
             this.move += e.wheelDeltaY / 1000;
         });
+        window.addEventListener("mousemove", (e)=>{
+            this.mouse.x = e.clientX / window.innerWidth * 2 - 1;
+            this.mouse.y = e.clientY / window.innerHeight * 2 - 1;
+            this.raycaster.setFromCamera(this.mouse, this.camera);
+            const intersects = this.raycaster.intersectObjects([
+                this.test
+            ]);
+            console.log(intersects[0].point);
+        }, false);
     }
     addMesh() {
         // this.geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
@@ -567,6 +578,8 @@ class Sketch {
         this.coordinates = new _three.BufferAttribute(new Float32Array(number * 3), 3);
         this.speeds = new _three.BufferAttribute(new Float32Array(number), 1);
         this.offset = new _three.BufferAttribute(new Float32Array(number), 1);
+        this.direction = new _three.BufferAttribute(new Float32Array(number), 1);
+        this.press = new _three.BufferAttribute(new Float32Array(number), 1);
         function rand(a, b) {
             return a + (b - a) * Math.random();
         }
@@ -577,7 +590,9 @@ class Sketch {
                 this.positions.setXYZ(index, posX * 2, j - baseAmount / 2, 0); //Number of particles, x position, y position, z position
                 this.coordinates.setXYZ(index, i, j, 0);
                 this.offset.setX(index, rand(-1000, 1000)); // Using 1000 cause the camera is at 1000
-                this.speeds.setX(index, rand(0.4, 1)); // Using 1000 cause the camera is at 1000
+                this.speeds.setX(index, rand(0.4, 1));
+                this.direction.setX(index, Math.random() > 0.5 ? 1 : -1);
+                this.press.setX(index, rand(0.4, 1));
                 index++;
             }
         }
@@ -586,6 +601,8 @@ class Sketch {
         this.geometry.setAttribute("aCoordinates", this.coordinates);
         this.geometry.setAttribute("aOffset", this.offset);
         this.geometry.setAttribute("aSpeed", this.speeds);
+        this.geometry.setAttribute("aDirection", this.direction);
+        this.geometry.setAttribute("aPress", this.press);
         // this.material = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide });
         this.material = new _three.ShaderMaterial({
             fragmentShader: _fragmentGlslDefault.default,
@@ -606,6 +623,10 @@ class Sketch {
                 imgMask: {
                     type: "t",
                     value: this.mask
+                },
+                mouse: {
+                    type: "t",
+                    value: null
                 },
                 move: {
                     type: "f",
@@ -631,6 +652,7 @@ class Sketch {
         // console.log(this.time);
         this.material.uniforms.time.value = this.time;
         this.material.uniforms.move.value = this.move;
+        this.material.uniforms.mouse.value = this.mouse;
         this.renderer.render(this.scene, this.camera);
         window.requestAnimationFrame(this.render.bind(this));
     }
@@ -30441,7 +30463,7 @@ exports.export = function(dest, destName, get) {
 module.exports = "#define GLSLIFY 1\nvarying vec2 vCoordinates;\nvarying vec3 vPos;\nuniform sampler2D imgCans;\nuniform sampler2D imgImposter;\nuniform sampler2D imgMask;\n\nvoid main(){\n    vec4 maskTexture = texture2D(imgMask, gl_PointCoord);\n    vec2 myUV = vec2(vCoordinates.x/512., vCoordinates.y/512.);\n    vec4 image =  texture2D(imgImposter, myUV);\n    // gl_FragColor = vec4(1., 0., 0., 1.); //Red\n    // gl_FragColor = vec4(1., 1., 0., 1.); //Yellow\n    //  gl_FragColor = vec4(vCoordinates.x/512., 1., 0., 1.);  //Gradient\n    //  gl_FragColor = vec4(vCoordinates.x/512., vCoordinates.y/512., 0., 1.);  //More Gradient\n\n    float alpha = 1. - clamp(0., 1., abs(vPos.z/900.));\n     gl_FragColor = image;\n     gl_FragColor.a *= maskTexture.r;\n     gl_FragColor.a *= maskTexture.r* alpha;\n    //  gl_FragColor *= vec4(alpha);\n\n}";
 
 },{}],"fWka7":[function(require,module,exports) {
-module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\nvarying vec3 vPos;\nvarying vec2 vCoordinates;\nattribute vec3 aCoordinates;\nattribute float aSpeed;\nattribute float aOffset;\n\nuniform float move;\nuniform float time;\n\nvoid main(){\n    vUv = uv;\n\n    vec3 pos = position;\n\n    //NOT STABLE\n    pos.x += sin(move)*10.;\n    pos.y += sin(move)*10.;\n    pos.z = mod(position.z + move*20.*aSpeed + aOffset, 2000.) - 1000.;\n\n    // gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);\n    vec4 mvPosition = modelViewMatrix * vec4( pos, 1.);\n    gl_PointSize = 3000. * (1. / - mvPosition.z ); // For particles we need to set point size\n    // gl_PointSize = size * 10.;\n    gl_Position = projectionMatrix * mvPosition;\n\n    vCoordinates = aCoordinates.xy;\n    vPos = pos;\n\n}";
+module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\nvarying vec3 vPos;\nvarying vec2 vCoordinates;\nattribute vec3 aCoordinates;\nattribute float aSpeed;\nattribute float aOffset;\nattribute float aDirection;\nattribute float aPress;\n\nuniform float move;\nuniform float time;\nuniform vec2 mouse;\n\nvoid main(){\n    vUv = uv;\n\n    vec3 pos = position;\n\n    //NOT STABLE\n    pos.x += sin(move)*3.;\n    pos.y += sin(move)*3.;\n    pos.z = mod(position.z + move*20.*aSpeed + aOffset, 2000.) - 1000.;\n\n    //STABLE\n    vec3 stable = position;\n    float dist = distance(stable.xy, mouse);\n\n \n    stable.x += 50.*sin(0.1*time*aPress)*aDirection;\n    stable.y += 50.*sin(0.1*time*aPress)*aDirection;\n    stable.z += 200.*cos(0.1*time*aPress)*aDirection;\n\n    vec4 mvPosition = modelViewMatrix * vec4( stable, 1.);\n    gl_PointSize = 3000. * (1. / - mvPosition.z ); // For particles we need to set point size\n    gl_Position = projectionMatrix * mvPosition;\n\n    vCoordinates = aCoordinates.xy;\n    vPos = pos;\n\n}";
 
 },{}],"5IGEo":[function(require,module,exports) {
 module.exports = function(THREE) {
