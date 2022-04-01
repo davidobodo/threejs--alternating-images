@@ -1,6 +1,6 @@
 
 varying vec2 vUv;
-varying vec2 vPos;
+varying vec3 vPos;
 varying vec2 vCoordinates;
 attribute vec3 aCoordinates;
 attribute float aSpeed;
@@ -23,5 +23,6 @@ void main(){
     gl_Position = projectionMatrix * mvPosition;
 
     vCoordinates = aCoordinates.xy;
+    vPos = pos;
 
 }
