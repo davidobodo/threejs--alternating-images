@@ -550,18 +550,22 @@ class Sketch {
         // this.geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
         this.geometry = new _three.PlaneBufferGeometry(1000, 1000, 10, 10); //Lets use a plane instead of a box geometry
         this.geometry = new _three.BufferGeometry();
-        let number = 262144;
+        let baseAmount = 512;
+        let number = baseAmount * baseAmount;
         this.positions = new _three.BufferAttribute(new Float32Array(number * 3), 3);
+        this.coordinates = new _three.BufferAttribute(new Float32Array(number * 3), 3);
         let index = 0;
-        for(let i = 0; i < 512; i++){
-            let posX = i - 256; //Used to center the particles
-            for(let j = 0; j < 512; j++){
-                this.positions.setXYZ(index, posX * 2, j - 256, 0); //Number of particles, x position, y position, z position
+        for(let i = 0; i < baseAmount; i++){
+            let posX = i - baseAmount / 2; //Used to center the particles
+            for(let j = 0; j < baseAmount; j++){
+                this.positions.setXYZ(index, posX * 2, j - baseAmount / 2, 0); //Number of particles, x position, y position, z position
+                this.coordinates.setXYZ(index, i, j, 0);
                 index++;
             }
         }
         //Add the positions to the geometry
         this.geometry.setAttribute("position", this.positions);
+        this.geometry.setAttribute("aCoordinates", this.coordinates);
         // this.material = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide });
         this.material = new _three.ShaderMaterial({
             fragmentShader: _fragmentGlslDefault.default,
@@ -30397,10 +30401,10 @@ exports.export = function(dest, destName, get) {
 };
 
 },{}],"6yofB":[function(require,module,exports) {
-module.exports = "#define GLSLIFY 1\nvoid main(){\n    gl_FragColor = vec4(1., 0., 0., 1.);\n}";
+module.exports = "#define GLSLIFY 1\nvarying vec2 vCoordinates;\n\nuniform sampler2D imgCans;\nuniform sampler2D imgImposter;\n\nvoid main(){\n    vec2 myUV = vec2(vCoordinates.x/512., vCoordinates.y/512.);\n\n    vec4 image =  texture2D(imgImposter, myUV);\n    // gl_FragColor = vec4(1., 0., 0., 1.); //Red\n    // gl_FragColor = vec4(1., 1., 0., 1.); //Yellow\n    //  gl_FragColor = vec4(vCoordinates.x/512., 1., 0., 1.);  //Gradient\n    //  gl_FragColor = vec4(vCoordinates.x/512., vCoordinates.y/512., 0., 1.);  //More Gradient\n     gl_FragColor = image;\n}";
 
 },{}],"fWka7":[function(require,module,exports) {
-module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\n\nvoid main(){\n    vUv = uv;\n\n    // gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);\n    vec4 mvPosition = modelViewMatrix * vec4( position, 1.);\n    gl_PointSize = 2000. * (1. / - mvPosition.z ); // For particles we need to set point size\n    // gl_PointSize = size * 10.;\n    gl_Position = projectionMatrix * mvPosition;\n\n}";
+module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\nvarying vec2 vCoordinates;\nattribute vec3 aCoordinates;\n\nvoid main(){\n    vUv = uv;\n\n    // gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);\n    vec4 mvPosition = modelViewMatrix * vec4( position, 1.);\n    gl_PointSize = 2000. * (1. / - mvPosition.z ); // For particles we need to set point size\n    // gl_PointSize = size * 10.;\n    gl_Position = projectionMatrix * mvPosition;\n\n    vCoordinates = aCoordinates.xy;\n\n}";
 
 },{}],"5IGEo":[function(require,module,exports) {
 module.exports = function(THREE) {

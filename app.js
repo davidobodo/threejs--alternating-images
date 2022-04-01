@@ -28,21 +28,25 @@ export default class Sketch {
         // this.geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
         this.geometry = new THREE.PlaneBufferGeometry(1000, 1000, 10, 10); //Lets use a plane instead of a box geometry
         this.geometry = new THREE.BufferGeometry();
-        let number = 512 * 512;
+        let baseAmount = 512;
+        let number = baseAmount * baseAmount;
 
         this.positions = new THREE.BufferAttribute(new Float32Array(number * 3), 3);
+        this.coordinates = new THREE.BufferAttribute(new Float32Array(number * 3), 3);
 
         let index = 0;
-        for (let i = 0; i < 512; i++) {
-            let posX = i - 256; //Used to center the particles
-            for (let j = 0; j < 512; j++) {
-                this.positions.setXYZ(index, posX * 2, j - 256, 0); //Number of particles, x position, y position, z position
+        for (let i = 0; i < baseAmount; i++) {
+            let posX = i - baseAmount / 2; //Used to center the particles
+            for (let j = 0; j < baseAmount; j++) {
+                this.positions.setXYZ(index, posX * 2, j - baseAmount / 2, 0); //Number of particles, x position, y position, z position
+                this.coordinates.setXYZ(index, i, j, 0);
                 index++;
             }
         }
 
         //Add the positions to the geometry
         this.geometry.setAttribute("position", this.positions);
+        this.geometry.setAttribute("aCoordinates", this.coordinates);
 
         // this.material = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide });
         this.material = new THREE.ShaderMaterial({
@@ -63,6 +67,9 @@ export default class Sketch {
                 }
             },
             side: THREE.DoubleSide
+            // transparent: true,
+            // depthTest: false,
+            // depthWrite: false
         });
         this.mesh = new THREE.Points(this.geometry, this.material);
         this.scene.add(this.mesh);
