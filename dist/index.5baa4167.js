@@ -30384,7 +30384,7 @@ exports.export = function(dest, destName, get) {
 module.exports = "#define GLSLIFY 1\nvoid main(){\n    gl_FragColor = vec4(1., 0., 0., 1.);\n}";
 
 },{}],"fWka7":[function(require,module,exports) {
-module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\n\nvoid main(){\n    vUv = uv;\n\n    // gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);\n    vec4 mvPosition = modelViewMatrix * vec4( position, 1.);\n    gl_PointSize = 5000. * (1. / - mvPosition.z ); // For particles we need to set point size\n    // gl_PointSize = size * 10.;\n    gl_Position = projectionMatrix * mvPosition;\n\n}";
+module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\n\nvoid main(){\n    vUv = uv;\n\n    // gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);\n    vec4 mvPosition = modelViewMatrix * vec4( position, 1.);\n    gl_PointSize = 200. * (1. / - mvPosition.z ); // For particles we need to set point size\n    // gl_PointSize = size * 10.;\n    gl_Position = projectionMatrix * mvPosition;\n\n}";
 
 },{}],"5IGEo":[function(require,module,exports) {
 module.exports = function(THREE) {
