@@ -4,6 +4,7 @@ import vertex from "./shaders/vertex.glsl";
 import imgCans from "./img/t.png";
 import imgImposter from "./img/t1.webp";
 import imgMask from "./img/mask.jpeg";
+import gsap from "gsap";
 
 let orbitControls = require("three-orbit-controls")(THREE);
 export default class Sketch {
@@ -21,6 +22,7 @@ export default class Sketch {
 
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
+        this.point = new THREE.Vector2();
 
         this.textures = [new THREE.TextureLoader().load(imgCans), new THREE.TextureLoader().load(imgImposter)];
         this.mask = new THREE.TextureLoader().load(imgMask);
@@ -46,6 +48,9 @@ export default class Sketch {
 
                 const intersects = this.raycaster.intersectObjects([this.test]);
                 console.log(intersects[0].point);
+
+                this.point.x = intersects[0].point.x;
+                this.point.y = intersects[0].point.y;
             },
             false
         );
@@ -141,7 +146,7 @@ export default class Sketch {
         // console.log(this.time);
         this.material.uniforms.time.value = this.time;
         this.material.uniforms.move.value = this.move;
-        this.material.uniforms.mouse.value = this.mouse;
+        this.material.uniforms.mouse.value = this.point;
         this.renderer.render(this.scene, this.camera);
 
         window.requestAnimationFrame(this.render.bind(this));

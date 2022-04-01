@@ -543,6 +543,7 @@ class Sketch {
         this.move = 0;
         this.raycaster = new _three.Raycaster();
         this.mouse = new _three.Vector2();
+        this.point = new _three.Vector2();
         this.textures = [
             new _three.TextureLoader().load(_tPngDefault.default),
             new _three.TextureLoader().load(_t1WebpDefault.default)
@@ -566,6 +567,8 @@ class Sketch {
                 this.test
             ]);
             console.log(intersects[0].point);
+            this.point.x = intersects[0].point.x;
+            this.point.y = intersects[0].point.y;
         }, false);
     }
     addMesh() {
@@ -652,7 +655,7 @@ class Sketch {
         // console.log(this.time);
         this.material.uniforms.time.value = this.time;
         this.material.uniforms.move.value = this.move;
-        this.material.uniforms.mouse.value = this.mouse;
+        this.material.uniforms.mouse.value = this.point;
         this.renderer.render(this.scene, this.camera);
         window.requestAnimationFrame(this.render.bind(this));
     }
@@ -660,7 +663,7 @@ class Sketch {
 exports.default = Sketch;
 new Sketch();
 
-},{"three":"ktPTu","./shaders/fragment.glsl":"6yofB","./shaders/vertex.glsl":"fWka7","@parcel/transformer-js/src/esmodule-helpers.js":"ghM2o","three-orbit-controls":"5IGEo","./img/t.png":"jaDSu","./img/t1.webp":"kmVB6","./img/mask.jpeg":"1RWn9"}],"ktPTu":[function(require,module,exports) {
+},{"three":"ktPTu","./shaders/fragment.glsl":"6yofB","./shaders/vertex.glsl":"fWka7","./img/t.png":"jaDSu","./img/t1.webp":"kmVB6","./img/mask.jpeg":"1RWn9","three-orbit-controls":"5IGEo","@parcel/transformer-js/src/esmodule-helpers.js":"ghM2o"}],"ktPTu":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "ACESFilmicToneMapping", ()=>ACESFilmicToneMapping
@@ -30463,9 +30466,52 @@ exports.export = function(dest, destName, get) {
 module.exports = "#define GLSLIFY 1\nvarying vec2 vCoordinates;\nvarying vec3 vPos;\nuniform sampler2D imgCans;\nuniform sampler2D imgImposter;\nuniform sampler2D imgMask;\n\nvoid main(){\n    vec4 maskTexture = texture2D(imgMask, gl_PointCoord);\n    vec2 myUV = vec2(vCoordinates.x/512., vCoordinates.y/512.);\n    vec4 image =  texture2D(imgImposter, myUV);\n    // gl_FragColor = vec4(1., 0., 0., 1.); //Red\n    // gl_FragColor = vec4(1., 1., 0., 1.); //Yellow\n    //  gl_FragColor = vec4(vCoordinates.x/512., 1., 0., 1.);  //Gradient\n    //  gl_FragColor = vec4(vCoordinates.x/512., vCoordinates.y/512., 0., 1.);  //More Gradient\n\n    float alpha = 1. - clamp(0., 1., abs(vPos.z/900.));\n     gl_FragColor = image;\n     gl_FragColor.a *= maskTexture.r;\n     gl_FragColor.a *= maskTexture.r* alpha;\n    //  gl_FragColor *= vec4(alpha);\n\n}";
 
 },{}],"fWka7":[function(require,module,exports) {
-module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\nvarying vec3 vPos;\nvarying vec2 vCoordinates;\nattribute vec3 aCoordinates;\nattribute float aSpeed;\nattribute float aOffset;\nattribute float aDirection;\nattribute float aPress;\n\nuniform float move;\nuniform float time;\nuniform vec2 mouse;\n\nvoid main(){\n    vUv = uv;\n\n    vec3 pos = position;\n\n    //NOT STABLE\n    pos.x += sin(move)*3.;\n    pos.y += sin(move)*3.;\n    pos.z = mod(position.z + move*20.*aSpeed + aOffset, 2000.) - 1000.;\n\n    //STABLE\n    vec3 stable = position;\n    float dist = distance(stable.xy, mouse);\n\n \n    stable.x += 50.*sin(0.1*time*aPress)*aDirection;\n    stable.y += 50.*sin(0.1*time*aPress)*aDirection;\n    stable.z += 200.*cos(0.1*time*aPress)*aDirection;\n\n    vec4 mvPosition = modelViewMatrix * vec4( stable, 1.);\n    gl_PointSize = 3000. * (1. / - mvPosition.z ); // For particles we need to set point size\n    gl_Position = projectionMatrix * mvPosition;\n\n    vCoordinates = aCoordinates.xy;\n    vPos = pos;\n\n}";
+module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\nvarying vec3 vPos;\nvarying vec2 vCoordinates;\nattribute vec3 aCoordinates;\nattribute float aSpeed;\nattribute float aOffset;\nattribute float aDirection;\nattribute float aPress;\n\nuniform float move;\nuniform float time;\nuniform vec2 mouse;\nuniform vec2 mousePressed;\n\nvoid main(){\n    vUv = uv;\n\n    vec3 pos = position;\n\n    //NOT STABLE\n    pos.x += sin(move)*3.;\n    pos.y += sin(move)*3.;\n    pos.z = mod(position.z + move*20.*aSpeed + aOffset, 2000.) - 1000.;\n\n    //STABLE\n    vec3 stable = position;\n    float dist = distance(stable.xy, mouse);\n    float area = 1. - smoothstep(0., 300., dist);\n\n \n    stable.x += 50.*sin(0.1*time*aPress)*aDirection*area*mousePressed;\n    stable.y += 50.*sin(0.1*time*aPress)*aDirection*area*mousePressed;\n    stable.z += 200.*cos(0.1*time*aPress)*aDirection*area*mousePressed;\n\n    vec4 mvPosition = modelViewMatrix * vec4( stable, 1.);\n    gl_PointSize = 3000. * (1. / - mvPosition.z ); // For particles we need to set point size\n    gl_Position = projectionMatrix * mvPosition;\n\n    vCoordinates = aCoordinates.xy;\n    vPos = pos;\n\n}";
 
-},{}],"5IGEo":[function(require,module,exports) {
+},{}],"jaDSu":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('1G2bZ') + "t.3c40bf2c.png" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"8lPPU"}],"8lPPU":[function(require,module,exports) {
+"use strict";
+var bundleURL = {};
+function getBundleURLCached(id) {
+    var value = bundleURL[id];
+    if (!value) {
+        value = getBundleURL();
+        bundleURL[id] = value;
+    }
+    return value;
+}
+function getBundleURL() {
+    try {
+        throw new Error();
+    } catch (err) {
+        var matches = ('' + err.stack).match(/(https?|file|ftp):\/\/[^)\n]+/g);
+        if (matches) // The first two stack frames will be this function and getBundleURLCached.
+        // Use the 3rd one, which will be a runtime in the original bundle.
+        return getBaseURL(matches[2]);
+    }
+    return '/';
+}
+function getBaseURL(url) {
+    return ('' + url).replace(/^((?:https?|file|ftp):\/\/.+)\/[^/]+$/, '$1') + '/';
+} // TODO: Replace uses with `new URL(url).origin` when ie11 is no longer supported.
+function getOrigin(url) {
+    var matches = ('' + url).match(/(https?|file|ftp):\/\/[^/]+/);
+    if (!matches) throw new Error('Origin not found');
+    return matches[0];
+}
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+exports.getOrigin = getOrigin;
+
+},{}],"kmVB6":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('1G2bZ') + "t1.0092ba9c.webp" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"8lPPU"}],"1RWn9":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('1G2bZ') + "mask.9d79e00f.jpeg" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"8lPPU"}],"5IGEo":[function(require,module,exports) {
 module.exports = function(THREE) {
     /**
 	 * @author qiao / https://github.com/qiao
@@ -31058,49 +31104,6 @@ module.exports = function(THREE) {
     return OrbitControls;
 };
 
-},{}],"jaDSu":[function(require,module,exports) {
-module.exports = require('./helpers/bundle-url').getBundleURL('1G2bZ') + "t.3c40bf2c.png" + "?" + Date.now();
-
-},{"./helpers/bundle-url":"8lPPU"}],"8lPPU":[function(require,module,exports) {
-"use strict";
-var bundleURL = {};
-function getBundleURLCached(id) {
-    var value = bundleURL[id];
-    if (!value) {
-        value = getBundleURL();
-        bundleURL[id] = value;
-    }
-    return value;
-}
-function getBundleURL() {
-    try {
-        throw new Error();
-    } catch (err) {
-        var matches = ('' + err.stack).match(/(https?|file|ftp):\/\/[^)\n]+/g);
-        if (matches) // The first two stack frames will be this function and getBundleURLCached.
-        // Use the 3rd one, which will be a runtime in the original bundle.
-        return getBaseURL(matches[2]);
-    }
-    return '/';
-}
-function getBaseURL(url) {
-    return ('' + url).replace(/^((?:https?|file|ftp):\/\/.+)\/[^/]+$/, '$1') + '/';
-} // TODO: Replace uses with `new URL(url).origin` when ie11 is no longer supported.
-function getOrigin(url) {
-    var matches = ('' + url).match(/(https?|file|ftp):\/\/[^/]+/);
-    if (!matches) throw new Error('Origin not found');
-    return matches[0];
-}
-exports.getBundleURL = getBundleURLCached;
-exports.getBaseURL = getBaseURL;
-exports.getOrigin = getOrigin;
-
-},{}],"kmVB6":[function(require,module,exports) {
-module.exports = require('./helpers/bundle-url').getBundleURL('1G2bZ') + "t1.0092ba9c.webp" + "?" + Date.now();
-
-},{"./helpers/bundle-url":"8lPPU"}],"1RWn9":[function(require,module,exports) {
-module.exports = require('./helpers/bundle-url').getBundleURL('1G2bZ') + "mask.9d79e00f.jpeg" + "?" + Date.now();
-
-},{"./helpers/bundle-url":"8lPPU"}]},["g9xlh","igcvL"], "igcvL", "parcelRequire699e")
+},{}]},["g9xlh","igcvL"], "igcvL", "parcelRequire699e")
 
 //# sourceMappingURL=index.5baa4167.js.map
