@@ -52,6 +52,14 @@ export default class Sketch {
                 progress: {
                     type: "f",
                     value: 0
+                },
+                imgCans: {
+                    type: "t",
+                    value: this.textures[0]
+                },
+                imgImposter: {
+                    type: "t",
+                    value: this.textures[1]
                 }
             },
             side: THREE.DoubleSide
