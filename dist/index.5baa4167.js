@@ -560,14 +560,16 @@ class Sketch {
         this.test = new _three.Mesh(new _three.PlaneBufferGeometry(2000, 2000), new _three.MeshBasicMaterial());
         window.addEventListener("mousedown", (e)=>{
             _gsapDefault.default.to(this.material.uniforms.mousePressed, {
-                duration: 0.5,
-                value: 1
+                duration: 1,
+                value: 1,
+                ease: "elastic.out(1, 0.3)"
             });
         });
         window.addEventListener("mouseup", (e)=>{
             _gsapDefault.default.to(this.material.uniforms.mousePressed, {
-                duration: 0.5,
-                value: 0
+                duration: 1,
+                value: 0,
+                ease: "elastic.out(1, 0.3)"
             });
         });
         window.addEventListener("mousewheel", (e)=>{
@@ -30481,10 +30483,10 @@ exports.export = function(dest, destName, get) {
 };
 
 },{}],"6yofB":[function(require,module,exports) {
-module.exports = "#define GLSLIFY 1\nvarying vec2 vCoordinates;\nvarying vec3 vPos;\nuniform sampler2D imgCans;\nuniform sampler2D imgImposter;\nuniform sampler2D imgMask;\n\nvoid main(){\n    vec4 maskTexture = texture2D(imgMask, gl_PointCoord);\n    vec2 myUV = vec2(vCoordinates.x/512., vCoordinates.y/512.);\n    vec4 image =  texture2D(imgImposter, myUV);\n    // gl_FragColor = vec4(1., 0., 0., 1.); //Red\n    // gl_FragColor = vec4(1., 1., 0., 1.); //Yellow\n    //  gl_FragColor = vec4(vCoordinates.x/512., 1., 0., 1.);  //Gradient\n    //  gl_FragColor = vec4(vCoordinates.x/512., vCoordinates.y/512., 0., 1.);  //More Gradient\n\n    float alpha = 1. - clamp(0., 1., abs(vPos.z/900.));\n     gl_FragColor = image;\n     gl_FragColor.a *= maskTexture.r;\n     gl_FragColor.a *= maskTexture.r* alpha;\n    //  gl_FragColor *= vec4(alpha);\n\n}";
+module.exports = "#define GLSLIFY 1\nvarying vec2 vCoordinates;\nvarying vec3 vPos;\nuniform sampler2D imgCans;\nuniform sampler2D imgImposter;\nuniform sampler2D imgMask;\nuniform float move;\n\nvoid main(){\n    vec4 maskTexture = texture2D(imgMask, gl_PointCoord);\n    vec2 myUV = vec2(vCoordinates.x/512., vCoordinates.y/512.);\n    vec4 image1 =  texture2D(imgImposter, myUV);\n    vec4 image2 =  texture2D(imgCans, myUV);\n    vec4 final = mix(image1, image2, fract(move));\n    // gl_FragColor = vec4(1., 0., 0., 1.); //Red\n    // gl_FragColor = vec4(1., 1., 0., 1.); //Yellow\n    //  gl_FragColor = vec4(vCoordinates.x/512., 1., 0., 1.);  //Gradient\n    //  gl_FragColor = vec4(vCoordinates.x/512., vCoordinates.y/512., 0., 1.);  //More Gradient\n\n    float alpha = 1. - clamp(0., 1., abs(vPos.z/900.));\n     gl_FragColor = final;\n     gl_FragColor.a *= maskTexture.r;\n     gl_FragColor.a *= maskTexture.r* alpha;\n    //  gl_FragColor *= vec4(alpha);\n\n}";
 
 },{}],"fWka7":[function(require,module,exports) {
-module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\nvarying vec3 vPos;\nvarying vec2 vCoordinates;\nattribute vec3 aCoordinates;\nattribute float aSpeed;\nattribute float aOffset;\nattribute float aDirection;\nattribute float aPress;\n\nuniform float move;\nuniform float time;\nuniform vec2 mouse;\nuniform float mousePressed;\n\nvoid main(){\n    vUv = uv;\n\n    vec3 pos = position;\n\n    //NOT STABLE\n    pos.x += sin(move)*3.;\n    pos.y += sin(move)*3.;\n    pos.z = mod(position.z + move*20.*aSpeed + aOffset, 2000.) - 1000.;\n\n    //STABLE\n    vec3 stable = position;\n    float dist = distance(stable.xy, mouse);\n    float area = 1. - smoothstep(0., 300., dist);\n\n \n    stable.x += 50.*sin(0.1*time*aPress)*aDirection*area*mousePressed;\n    stable.y += 50.*sin(0.1*time*aPress)*aDirection*area*mousePressed;\n    stable.z += 200.*cos(0.1*time*aPress)*aDirection*area*mousePressed;\n\n    vec4 mvPosition = modelViewMatrix * vec4( stable, 1.);\n    gl_PointSize = 3000. * (1. / - mvPosition.z ); // For particles we need to set point size\n    gl_Position = projectionMatrix * mvPosition;\n\n    vCoordinates = aCoordinates.xy;\n    vPos = pos;\n\n}";
+module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\nvarying vec3 vPos;\nvarying vec2 vCoordinates;\nattribute vec3 aCoordinates;\nattribute float aSpeed;\nattribute float aOffset;\nattribute float aDirection;\nattribute float aPress;\n\nuniform float move;\nuniform float time;\nuniform vec2 mouse;\nuniform float mousePressed;\n\nvoid main(){\n    vUv = uv;\n\n    vec3 pos = position;\n\n    //NOT STABLE\n    pos.x += sin(move)*3.;\n    pos.y += sin(move)*3.;\n    pos.z = mod(position.z + move*200.*aSpeed + aOffset, 2000.) - 1000.;\n\n    //STABLE\n    vec3 stable = position;\n    float dist = distance(stable.xy, mouse);\n    float area = 1. - smoothstep(0., 300., dist);\n\n \n    stable.x += 50.*sin(0.1*time*aPress)*aDirection*area*mousePressed;\n    stable.y += 50.*sin(0.1*time*aPress)*aDirection*area*mousePressed;\n    stable.z += 200.*cos(0.1*time*aPress)*aDirection*area*mousePressed;\n\n    vec4 mvPosition = modelViewMatrix * vec4( pos, 1.);\n    gl_PointSize = 4000. * (1. / - mvPosition.z ); // For particles we need to set point size\n    gl_Position = projectionMatrix * mvPosition;\n\n    vCoordinates = aCoordinates.xy;\n    vPos = pos;\n\n}";
 
 },{}],"jaDSu":[function(require,module,exports) {
 module.exports = require('./helpers/bundle-url').getBundleURL('1G2bZ') + "t.3c40bf2c.png" + "?" + Date.now();

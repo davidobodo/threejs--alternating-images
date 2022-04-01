@@ -37,15 +37,17 @@ export default class Sketch {
 
         window.addEventListener("mousedown", (e) => {
             gsap.to(this.material.uniforms.mousePressed, {
-                duration: 0.5,
-                value: 1
+                duration: 1,
+                value: 1,
+                ease: "elastic.out(1, 0.3)"
             });
         });
 
         window.addEventListener("mouseup", (e) => {
             gsap.to(this.material.uniforms.mousePressed, {
-                duration: 0.5,
-                value: 0
+                duration: 1,
+                value: 0,
+                ease: "elastic.out(1, 0.3)"
             });
         });
 

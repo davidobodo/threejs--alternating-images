@@ -22,7 +22,7 @@ void main(){
     //NOT STABLE
     pos.x += sin(move)*3.;
     pos.y += sin(move)*3.;
-    pos.z = mod(position.z + move*20.*aSpeed + aOffset, 2000.) - 1000.;
+    pos.z = mod(position.z + move*200.*aSpeed + aOffset, 2000.) - 1000.;
 
     //STABLE
     vec3 stable = position;
@@ -35,8 +35,8 @@ void main(){
     stable.z += 200.*cos(0.1*time*aPress)*aDirection*area*mousePressed;
 
 
-    vec4 mvPosition = modelViewMatrix * vec4( stable, 1.);
-    gl_PointSize = 3000. * (1. / - mvPosition.z ); // For particles we need to set point size
+    vec4 mvPosition = modelViewMatrix * vec4( pos, 1.);
+    gl_PointSize = 4000. * (1. / - mvPosition.z ); // For particles we need to set point size
     gl_Position = projectionMatrix * mvPosition;
 
     vCoordinates = aCoordinates.xy;
