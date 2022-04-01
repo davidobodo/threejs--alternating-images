@@ -521,6 +521,10 @@ var _fragmentGlsl = require("./shaders/fragment.glsl");
 var _fragmentGlslDefault = parcelHelpers.interopDefault(_fragmentGlsl);
 var _vertexGlsl = require("./shaders/vertex.glsl");
 var _vertexGlslDefault = parcelHelpers.interopDefault(_vertexGlsl);
+var _tPng = require("./img/t.png");
+var _tPngDefault = parcelHelpers.interopDefault(_tPng);
+var _t1Webp = require("./img/t1.webp");
+var _t1WebpDefault = parcelHelpers.interopDefault(_t1Webp);
 let orbitControls = require("three-orbit-controls")(_three);
 class Sketch {
     constructor(){
@@ -530,10 +534,14 @@ class Sketch {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         // this.renderer.setAnimationLoop(animation); // Not sure why this wasnt used
         document.getElementById("container").appendChild(this.renderer.domElement);
-        this.camera = new _three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 3000);
+        this.camera = new _three.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 3000);
         this.camera.position.z = 1000;
         this.scene = new _three.Scene();
         this.time = 0;
+        this.textures = [
+            new _three.TextureLoader().load(_tPngDefault.default),
+            new _three.TextureLoader().load(_t1WebpDefault.default)
+        ];
         this.controls = new orbitControls(this.camera, this.renderer.domElement);
         this.addMesh();
         this.render();
@@ -581,7 +589,7 @@ class Sketch {
 exports.default = Sketch;
 new Sketch();
 
-},{"three":"ktPTu","./shaders/fragment.glsl":"6yofB","./shaders/vertex.glsl":"fWka7","@parcel/transformer-js/src/esmodule-helpers.js":"ghM2o","three-orbit-controls":"5IGEo"}],"ktPTu":[function(require,module,exports) {
+},{"three":"ktPTu","./shaders/fragment.glsl":"6yofB","./shaders/vertex.glsl":"fWka7","@parcel/transformer-js/src/esmodule-helpers.js":"ghM2o","three-orbit-controls":"5IGEo","./img/t.png":"jaDSu","./img/t1.webp":"kmVB6"}],"ktPTu":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "ACESFilmicToneMapping", ()=>ACESFilmicToneMapping
@@ -30384,7 +30392,7 @@ exports.export = function(dest, destName, get) {
 module.exports = "#define GLSLIFY 1\nvoid main(){\n    gl_FragColor = vec4(1., 0., 0., 1.);\n}";
 
 },{}],"fWka7":[function(require,module,exports) {
-module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\n\nvoid main(){\n    vUv = uv;\n\n    // gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);\n    vec4 mvPosition = modelViewMatrix * vec4( position, 1.);\n    gl_PointSize = 200. * (1. / - mvPosition.z ); // For particles we need to set point size\n    // gl_PointSize = size * 10.;\n    gl_Position = projectionMatrix * mvPosition;\n\n}";
+module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\n\nvoid main(){\n    vUv = uv;\n\n    // gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);\n    vec4 mvPosition = modelViewMatrix * vec4( position, 1.);\n    gl_PointSize = 2000. * (1. / - mvPosition.z ); // For particles we need to set point size\n    // gl_PointSize = size * 10.;\n    gl_Position = projectionMatrix * mvPosition;\n\n}";
 
 },{}],"5IGEo":[function(require,module,exports) {
 module.exports = function(THREE) {
@@ -30979,6 +30987,46 @@ module.exports = function(THREE) {
     return OrbitControls;
 };
 
-},{}]},["g9xlh","igcvL"], "igcvL", "parcelRequire699e")
+},{}],"jaDSu":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('1G2bZ') + "t.3c40bf2c.png" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"8lPPU"}],"8lPPU":[function(require,module,exports) {
+"use strict";
+var bundleURL = {};
+function getBundleURLCached(id) {
+    var value = bundleURL[id];
+    if (!value) {
+        value = getBundleURL();
+        bundleURL[id] = value;
+    }
+    return value;
+}
+function getBundleURL() {
+    try {
+        throw new Error();
+    } catch (err) {
+        var matches = ('' + err.stack).match(/(https?|file|ftp):\/\/[^)\n]+/g);
+        if (matches) // The first two stack frames will be this function and getBundleURLCached.
+        // Use the 3rd one, which will be a runtime in the original bundle.
+        return getBaseURL(matches[2]);
+    }
+    return '/';
+}
+function getBaseURL(url) {
+    return ('' + url).replace(/^((?:https?|file|ftp):\/\/.+)\/[^/]+$/, '$1') + '/';
+} // TODO: Replace uses with `new URL(url).origin` when ie11 is no longer supported.
+function getOrigin(url) {
+    var matches = ('' + url).match(/(https?|file|ftp):\/\/[^/]+/);
+    if (!matches) throw new Error('Origin not found');
+    return matches[0];
+}
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+exports.getOrigin = getOrigin;
+
+},{}],"kmVB6":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('1G2bZ') + "t1.0092ba9c.webp" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"8lPPU"}]},["g9xlh","igcvL"], "igcvL", "parcelRequire699e")
 
 //# sourceMappingURL=index.5baa4167.js.map

@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import fragment from "./shaders/fragment.glsl";
 import vertex from "./shaders/vertex.glsl";
+import imgCans from "./img/t.png";
+import imgImposter from "./img/t1.webp";
 
 let orbitControls = require("three-orbit-controls")(THREE);
 export default class Sketch {
@@ -10,10 +12,12 @@ export default class Sketch {
         // this.renderer.setAnimationLoop(animation); // Not sure why this wasnt used
         document.getElementById("container").appendChild(this.renderer.domElement);
 
-        this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 3000);
+        this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 3000);
         this.camera.position.z = 1000;
         this.scene = new THREE.Scene();
         this.time = 0;
+
+        this.textures = [new THREE.TextureLoader().load(imgCans), new THREE.TextureLoader().load(imgImposter)];
 
         this.controls = new orbitControls(this.camera, this.renderer.domElement);
         this.addMesh();
