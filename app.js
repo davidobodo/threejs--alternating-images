@@ -34,6 +34,21 @@ export default class Sketch {
 
     mouseEffects() {
         this.test = new THREE.Mesh(new THREE.PlaneBufferGeometry(2000, 2000), new THREE.MeshBasicMaterial());
+
+        window.addEventListener("mousedown", (e) => {
+            gsap.to(this.material.uniforms.mousePressed, {
+                duration: 0.5,
+                value: 1
+            });
+        });
+
+        window.addEventListener("mouseup", (e) => {
+            gsap.to(this.material.uniforms.mousePressed, {
+                duration: 0.5,
+                value: 0
+            });
+        });
+
         window.addEventListener("mousewheel", (e) => {
             this.move += e.wheelDeltaY / 1000;
         });
@@ -118,8 +133,12 @@ export default class Sketch {
                     value: this.mask
                 },
                 mouse: {
-                    type: "t",
+                    type: "v2",
                     value: null
+                },
+                mousePressed: {
+                    type: "f",
+                    value: 0
                 },
                 move: {
                     type: "f",
