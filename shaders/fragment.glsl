@@ -16,7 +16,7 @@ void main(){
     float alpha = 1. - clamp(0., 1., abs(vPos.z/900.));
      gl_FragColor = image;
      gl_FragColor.a *= maskTexture.r;
-    //  gl_FragColor.a *= maskTexture.r* alpha;
+     gl_FragColor.a *= maskTexture.r* alpha;
     //  gl_FragColor *= vec4(alpha);
 
 }
