@@ -9,8 +9,8 @@ export default class Sketch {
         // this.renderer.setAnimationLoop(animation); // Not sure why this wasnt used
         document.getElementById("container").appendChild(this.renderer.domElement);
 
-        this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
-        this.camera.position.z = 1;
+        this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 3000);
+        this.camera.position.z = 1000;
         this.scene = new THREE.Scene();
 
         this.addMesh();
@@ -20,7 +20,12 @@ export default class Sketch {
 
     addMesh() {
         // this.geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-        this.geometry = new THREE.PlaneBufferGeometry(1, 1); //Lets use a plane instead of a box geometry
+        this.geometry = new THREE.PlaneBufferGeometry(1000, 1000, 10, 10); //Lets use a plane instead of a box geometry
+        // this.geometry = new THREE.BufferGeometry();
+        let number = 512 * 512;
+
+        // this.positions =
+
         this.material = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide });
         this.material = new THREE.ShaderMaterial({
             fragmentShader: fragment,
@@ -43,7 +48,7 @@ export default class Sketch {
         this.mesh.rotation.x += 0.01;
         // this.mesh.rotation.y = this.time / 1000;
         this.mesh.rotation.y += 0.02;
-        console.log(this.time);
+        // console.log(this.time);
         this.renderer.render(this.scene, this.camera);
 
         window.requestAnimationFrame(this.render.bind(this));

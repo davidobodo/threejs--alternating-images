@@ -529,8 +529,8 @@ class Sketch {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         // this.renderer.setAnimationLoop(animation); // Not sure why this wasnt used
         document.getElementById("container").appendChild(this.renderer.domElement);
-        this.camera = new _three.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
-        this.camera.position.z = 1;
+        this.camera = new _three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 3000);
+        this.camera.position.z = 1000;
         this.scene = new _three.Scene();
         this.addMesh();
         this.time = 0;
@@ -538,7 +538,10 @@ class Sketch {
     }
     addMesh() {
         // this.geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-        this.geometry = new _three.PlaneBufferGeometry(1, 1); //Lets use a plane instead of a box geometry
+        this.geometry = new _three.PlaneBufferGeometry(1000, 1000, 10, 10); //Lets use a plane instead of a box geometry
+        // this.geometry = new THREE.BufferGeometry();
+        let number = 262144;
+        // this.positions =
         this.material = new _three.MeshNormalMaterial({
             side: _three.DoubleSide
         });
@@ -562,7 +565,7 @@ class Sketch {
         this.mesh.rotation.x += 0.01;
         // this.mesh.rotation.y = this.time / 1000;
         this.mesh.rotation.y += 0.02;
-        console.log(this.time);
+        // console.log(this.time);
         this.renderer.render(this.scene, this.camera);
         window.requestAnimationFrame(this.render.bind(this));
     }
@@ -30373,7 +30376,7 @@ exports.export = function(dest, destName, get) {
 module.exports = "#define GLSLIFY 1\nvoid main(){\n    gl_FragColor = vec4(1., 0., 0., 1.);\n}";
 
 },{}],"fWka7":[function(require,module,exports) {
-module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\n\nvoid main(){\n\n    vUv = uv;\n\n    // gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);\n    vec4 mvPosition = modelViewMatrix * vec4( position, 1.);\n    gl_PointSize = 50. * (1. / - mvPosition.z ); // For particles we need to set point size\n    // gl_PointSize = size * 10.;\n    gl_Position = projectionMatrix * mvPosition;\n\n}";
+module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\n\nvoid main(){\n\n    vUv = uv;\n\n    // gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);\n    vec4 mvPosition = modelViewMatrix * vec4( position, 1.);\n    gl_PointSize = 5000. * (1. / - mvPosition.z ); // For particles we need to set point size\n    // gl_PointSize = size * 10.;\n    gl_Position = projectionMatrix * mvPosition;\n\n}";
 
 },{}]},["g9xlh","igcvL"], "igcvL", "parcelRequire699e")
 
