@@ -669,10 +669,14 @@ class Sketch {
         this.scene.add(this.mesh);
     }
     render() {
-        this.time++;
         // this.mesh.rotation.x += 0.01;
         // this.mesh.rotation.y += 0.02;
         // console.log(this.time);
+        this.time++;
+        let next = Math.floor(this.move + 40) % 2;
+        let prev = (Math.floor(this.move) + 1 + 40) % 2;
+        this.material.uniforms.imgImposter.value = this.textures[prev];
+        this.material.uniforms.imgCans.value = this.textures[next];
         this.material.uniforms.time.value = this.time;
         this.material.uniforms.move.value = this.move;
         this.material.uniforms.mouse.value = this.point;
@@ -30483,7 +30487,7 @@ exports.export = function(dest, destName, get) {
 };
 
 },{}],"6yofB":[function(require,module,exports) {
-module.exports = "#define GLSLIFY 1\nvarying vec2 vCoordinates;\nvarying vec3 vPos;\nuniform sampler2D imgCans;\nuniform sampler2D imgImposter;\nuniform sampler2D imgMask;\nuniform float move;\n\nvoid main(){\n    vec4 maskTexture = texture2D(imgMask, gl_PointCoord);\n    vec2 myUV = vec2(vCoordinates.x/512., vCoordinates.y/512.);\n    vec4 image1 =  texture2D(imgImposter, myUV);\n    vec4 image2 =  texture2D(imgCans, myUV);\n    vec4 final = mix(image1, image2, fract(move));\n    // gl_FragColor = vec4(1., 0., 0., 1.); //Red\n    // gl_FragColor = vec4(1., 1., 0., 1.); //Yellow\n    //  gl_FragColor = vec4(vCoordinates.x/512., 1., 0., 1.);  //Gradient\n    //  gl_FragColor = vec4(vCoordinates.x/512., vCoordinates.y/512., 0., 1.);  //More Gradient\n\n    float alpha = 1. - clamp(0., 1., abs(vPos.z/900.));\n     gl_FragColor = final;\n     gl_FragColor.a *= maskTexture.r;\n     gl_FragColor.a *= maskTexture.r* alpha;\n    //  gl_FragColor *= vec4(alpha);\n\n}";
+module.exports = "#define GLSLIFY 1\nvarying vec2 vCoordinates;\nvarying vec3 vPos;\nuniform sampler2D imgCans;\nuniform sampler2D imgImposter;\nuniform sampler2D imgMask;\nuniform float move;\n\nvoid main(){\n    vec4 maskTexture = texture2D(imgMask, gl_PointCoord);\n    vec2 myUV = vec2(vCoordinates.x/512., vCoordinates.y/512.);\n    vec4 image1 =  texture2D(imgImposter, myUV);\n    vec4 image2 =  texture2D(imgCans, myUV);\n    vec4 final = mix(image1, image2, smoothstep(0., 1., fract(move)));\n    // gl_FragColor = vec4(1., 0., 0., 1.); //Red\n    // gl_FragColor = vec4(1., 1., 0., 1.); //Yellow\n    //  gl_FragColor = vec4(vCoordinates.x/512., 1., 0., 1.);  //Gradient\n    //  gl_FragColor = vec4(vCoordinates.x/512., vCoordinates.y/512., 0., 1.);  //More Gradient\n\n    float alpha = 1. - clamp(0., 1., abs(vPos.z/900.));\n     gl_FragColor = final;\n     gl_FragColor.a *= maskTexture.r;\n     gl_FragColor.a *= maskTexture.r* alpha;\n    //  gl_FragColor *= vec4(alpha);\n\n}";
 
 },{}],"fWka7":[function(require,module,exports) {
 module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\nvarying vec3 vPos;\nvarying vec2 vCoordinates;\nattribute vec3 aCoordinates;\nattribute float aSpeed;\nattribute float aOffset;\nattribute float aDirection;\nattribute float aPress;\n\nuniform float move;\nuniform float time;\nuniform vec2 mouse;\nuniform float mousePressed;\n\nvoid main(){\n    vUv = uv;\n\n    vec3 pos = position;\n\n    //NOT STABLE\n    pos.x += sin(move)*3.;\n    pos.y += sin(move)*3.;\n    pos.z = mod(position.z + move*200.*aSpeed + aOffset, 2000.) - 1000.;\n\n    //STABLE\n    vec3 stable = position;\n    float dist = distance(stable.xy, mouse);\n    float area = 1. - smoothstep(0., 300., dist);\n\n \n    stable.x += 50.*sin(0.1*time*aPress)*aDirection*area*mousePressed;\n    stable.y += 50.*sin(0.1*time*aPress)*aDirection*area*mousePressed;\n    stable.z += 200.*cos(0.1*time*aPress)*aDirection*area*mousePressed;\n\n    vec4 mvPosition = modelViewMatrix * vec4( pos, 1.);\n    gl_PointSize = 4000. * (1. / - mvPosition.z ); // For particles we need to set point size\n    gl_Position = projectionMatrix * mvPosition;\n\n    vCoordinates = aCoordinates.xy;\n    vPos = pos;\n\n}";

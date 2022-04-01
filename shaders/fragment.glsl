@@ -10,7 +10,7 @@ void main(){
     vec2 myUV = vec2(vCoordinates.x/512., vCoordinates.y/512.);
     vec4 image1 =  texture2D(imgImposter, myUV);
     vec4 image2 =  texture2D(imgCans, myUV);
-    vec4 final = mix(image1, image2, fract(move));
+    vec4 final = mix(image1, image2, smoothstep(0., 1., fract(move)));
     // gl_FragColor = vec4(1., 0., 0., 1.); //Red
     // gl_FragColor = vec4(1., 1., 0., 1.); //Yellow
     //  gl_FragColor = vec4(vCoordinates.x/512., 1., 0., 1.);  //Gradient

@@ -161,10 +161,16 @@ export default class Sketch {
     }
 
     render() {
-        this.time++;
         // this.mesh.rotation.x += 0.01;
         // this.mesh.rotation.y += 0.02;
         // console.log(this.time);
+        this.time++;
+
+        let next = Math.floor(this.move + 40) % 2;
+        let prev = (Math.floor(this.move) + 1 + 40) % 2;
+
+        this.material.uniforms.imgImposter.value = this.textures[prev];
+        this.material.uniforms.imgCans.value = this.textures[next];
         this.material.uniforms.time.value = this.time;
         this.material.uniforms.move.value = this.move;
         this.material.uniforms.mouse.value = this.point;
