@@ -37,7 +37,7 @@ export default class Sketch {
     settings() {
         let that = this;
         this.settings = {
-            progress: 0
+            progress: 1
         };
         this.gui = new dat.GUI();
         this.gui.add(this.settings, "progress", 0, 1, 0.01);
