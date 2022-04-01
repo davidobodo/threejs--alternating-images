@@ -3,6 +3,7 @@ import fragment from "./shaders/fragment.glsl";
 import vertex from "./shaders/vertex.glsl";
 import imgCans from "./img/t.png";
 import imgImposter from "./img/t1.webp";
+import imgMask from "./img/mask.jpeg";
 
 let orbitControls = require("three-orbit-controls")(THREE);
 export default class Sketch {
@@ -18,7 +19,7 @@ export default class Sketch {
         this.time = 0;
 
         this.textures = [new THREE.TextureLoader().load(imgCans), new THREE.TextureLoader().load(imgImposter)];
-
+        this.mask = new THREE.TextureLoader().load(imgMask);
         this.controls = new orbitControls(this.camera, this.renderer.domElement);
         this.addMesh();
         this.render();
@@ -64,6 +65,10 @@ export default class Sketch {
                 imgImposter: {
                     type: "t",
                     value: this.textures[1]
+                },
+                imgMask: {
+                    type: "t",
+                    value: this.mask
                 }
             },
             side: THREE.DoubleSide,

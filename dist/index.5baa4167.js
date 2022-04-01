@@ -525,6 +525,8 @@ var _tPng = require("./img/t.png");
 var _tPngDefault = parcelHelpers.interopDefault(_tPng);
 var _t1Webp = require("./img/t1.webp");
 var _t1WebpDefault = parcelHelpers.interopDefault(_t1Webp);
+var _maskJpeg = require("./img/mask.jpeg");
+var _maskJpegDefault = parcelHelpers.interopDefault(_maskJpeg);
 let orbitControls = require("three-orbit-controls")(_three);
 class Sketch {
     constructor(){
@@ -542,6 +544,7 @@ class Sketch {
             new _three.TextureLoader().load(_tPngDefault.default),
             new _three.TextureLoader().load(_t1WebpDefault.default)
         ];
+        this.mask = new _three.TextureLoader().load(_maskJpegDefault.default);
         this.controls = new orbitControls(this.camera, this.renderer.domElement);
         this.addMesh();
         this.render();
@@ -582,6 +585,10 @@ class Sketch {
                 imgImposter: {
                     type: "t",
                     value: this.textures[1]
+                },
+                imgMask: {
+                    type: "t",
+                    value: this.mask
                 }
             },
             side: _three.DoubleSide,
@@ -604,7 +611,7 @@ class Sketch {
 exports.default = Sketch;
 new Sketch();
 
-},{"three":"ktPTu","./shaders/fragment.glsl":"6yofB","./shaders/vertex.glsl":"fWka7","@parcel/transformer-js/src/esmodule-helpers.js":"ghM2o","three-orbit-controls":"5IGEo","./img/t.png":"jaDSu","./img/t1.webp":"kmVB6"}],"ktPTu":[function(require,module,exports) {
+},{"three":"ktPTu","./shaders/fragment.glsl":"6yofB","./shaders/vertex.glsl":"fWka7","@parcel/transformer-js/src/esmodule-helpers.js":"ghM2o","three-orbit-controls":"5IGEo","./img/t.png":"jaDSu","./img/t1.webp":"kmVB6","./img/mask.jpeg":"1RWn9"}],"ktPTu":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "ACESFilmicToneMapping", ()=>ACESFilmicToneMapping
@@ -30404,7 +30411,7 @@ exports.export = function(dest, destName, get) {
 };
 
 },{}],"6yofB":[function(require,module,exports) {
-module.exports = "#define GLSLIFY 1\nvarying vec2 vCoordinates;\n\nuniform sampler2D imgCans;\nuniform sampler2D imgImposter;\n\nvoid main(){\n    vec2 myUV = vec2(vCoordinates.x/512., vCoordinates.y/512.);\n\n    vec4 image =  texture2D(imgImposter, myUV);\n    // gl_FragColor = vec4(1., 0., 0., 1.); //Red\n    // gl_FragColor = vec4(1., 1., 0., 1.); //Yellow\n    //  gl_FragColor = vec4(vCoordinates.x/512., 1., 0., 1.);  //Gradient\n    //  gl_FragColor = vec4(vCoordinates.x/512., vCoordinates.y/512., 0., 1.);  //More Gradient\n     gl_FragColor = image;\n}";
+module.exports = "#define GLSLIFY 1\nvarying vec2 vCoordinates;\n\nuniform sampler2D imgCans;\nuniform sampler2D imgImposter;\nuniform sampler2D imgMask;\n\nvoid main(){\n    vec4 maskTexture = texture2D(imgMask, gl_PointCoord);\n    vec2 myUV = vec2(vCoordinates.x/512., vCoordinates.y/512.);\n    vec4 image =  texture2D(imgImposter, myUV);\n    // gl_FragColor = vec4(1., 0., 0., 1.); //Red\n    // gl_FragColor = vec4(1., 1., 0., 1.); //Yellow\n    //  gl_FragColor = vec4(vCoordinates.x/512., 1., 0., 1.);  //Gradient\n    //  gl_FragColor = vec4(vCoordinates.x/512., vCoordinates.y/512., 0., 1.);  //More Gradient\n     gl_FragColor = image;\n     gl_FragColor = maskTexture;\n\n}";
 
 },{}],"fWka7":[function(require,module,exports) {
 module.exports = "#define GLSLIFY 1\nvarying vec2 vUv;\nvarying vec2 vCoordinates;\nattribute vec3 aCoordinates;\n\nvoid main(){\n    vUv = uv;\n\n    // gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);\n    vec4 mvPosition = modelViewMatrix * vec4( position, 1.);\n    gl_PointSize = 1000. * (1. / - mvPosition.z ); // For particles we need to set point size\n    // gl_PointSize = size * 10.;\n    gl_Position = projectionMatrix * mvPosition;\n\n    vCoordinates = aCoordinates.xy;\n\n}";
@@ -31041,6 +31048,9 @@ exports.getOrigin = getOrigin;
 
 },{}],"kmVB6":[function(require,module,exports) {
 module.exports = require('./helpers/bundle-url').getBundleURL('1G2bZ') + "t1.0092ba9c.webp" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"8lPPU"}],"1RWn9":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('1G2bZ') + "mask.9d79e00f.jpeg" + "?" + Date.now();
 
 },{"./helpers/bundle-url":"8lPPU"}]},["g9xlh","igcvL"], "igcvL", "parcelRequire699e")
 
